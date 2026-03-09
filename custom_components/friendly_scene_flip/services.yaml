@@ -1,0 +1,38 @@
+toggle:
+  target:
+    entity:
+      domain: select
+      integration: friendly_scene_flip
+
+set_scene:
+  target:
+    entity:
+      domain: select
+      integration: friendly_scene_flip
+  fields:
+    slot:
+      required: true
+      selector:
+        select:
+          options:
+            - "a"
+            - "b"
+    scene_entity_id:
+      required: true
+      selector:
+        entity:
+          domain: scene
+
+activate:
+  target:
+    entity:
+      domain: select
+      integration: friendly_scene_flip
+  fields:
+    slot:
+      required: true
+      selector:
+        select:
+          options:
+            - "a"
+            - "b"

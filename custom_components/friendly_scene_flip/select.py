@@ -1,0 +1,178 @@
+"""Select entity for Friendly Scene Flip."""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+
+from homeassistant.components.select import SelectEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_NAME
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
+
+from .const import (
+    ATTR_ACTIVE_SLOT,
+    ATTR_SCENE_A,
+    ATTR_SCENE_B,
+    CONF_SCENE_A,
+    CONF_SCENE_B,
+    DOMAIN,
+    SLOT_A,
+    SLOT_B,
+)
+
+_LOGGER = logging.getLogger(__name__)
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the Friendly Scene Flip select entity."""
+    entity = FriendlySceneFlipSelect(config_entry)
+    async_add_entities([entity])
+
+    # Store entity reference for service handlers
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN][config_entry.entry_id] = entity
+
+
+def _scene_friendly_name(hass: HomeAssistant, entity_id: str) -> str:
+    """Get the friendly name of a scene, falling back to entity_id."""
+    state = hass.states.get(entity_id)
+    if state is not None:
+        return state.attributes.get("friendly_name", entity_id)
+    # Strip "scene." prefix as a reasonable fallback
+    return entity_id.removeprefix("scene.")
+
+
+class FriendlySceneFlipSelect(SelectEntity, RestoreEntity):
+    """A select entity that toggles between two scene slots."""
+
+    _attr_has_entity_name = True
+
+    def __init__(self, config_entry: ConfigEntry) -> None:
+        """Initialize the scene flip select entity."""
+        self._config_entry = config_entry
+        self._scene_a: str = config_entry.data[CONF_SCENE_A]
+        self._scene_b: str = config_entry.data[CONF_SCENE_B]
+        self._active_slot: str = SLOT_A
+        self._lock = asyncio.Lock()
+
+        self._attr_unique_id = config_entry.entry_id
+        self._attr_name = config_entry.data.get(CONF_NAME, "Scene Flip")
+
+    @property
+    def options(self) -> list[str]:
+        """Return the list of selectable options (scene friendly names)."""
+        if self.hass is None:
+            return [self._scene_a, self._scene_b]
+        name_a = _scene_friendly_name(self.hass, self._scene_a)
+        name_b = _scene_friendly_name(self.hass, self._scene_b)
+        return [name_a, name_b]
+
+    @property
+    def current_option(self) -> str | None:
+        """Return the friendly name of the currently active scene."""
+        if self.hass is None:
+            return None
+        entity_id = self._scene_a if self._active_slot == SLOT_A else self._scene_b
+        return _scene_friendly_name(self.hass, entity_id)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return extra state attributes."""
+        return {
+            ATTR_ACTIVE_SLOT: self._active_slot,
+            ATTR_SCENE_A: self._scene_a,
+            ATTR_SCENE_B: self._scene_b,
+        }
+
+    async def async_added_to_hass(self) -> None:
+        """Restore state on startup without triggering scenes."""
+        await super().async_added_to_hass()
+
+        last_state = await self.async_get_last_state()
+        if last_state is not None:
+            restored_slot = last_state.attributes.get(ATTR_ACTIVE_SLOT, SLOT_A)
+            if restored_slot in (SLOT_A, SLOT_B):
+                self._active_slot = restored_slot
+
+            restored_a = last_state.attributes.get(ATTR_SCENE_A)
+            if restored_a:
+                self._scene_a = restored_a
+
+            restored_b = last_state.attributes.get(ATTR_SCENE_B)
+            if restored_b:
+                self._scene_b = restored_b
+
+            _LOGGER.debug(
+                "Restored %s: active_slot=%s, scene_a=%s, scene_b=%s",
+                self.entity_id,
+                self._active_slot,
+                self._scene_a,
+                self._scene_b,
+            )
+
+        # Listen for options flow updates
+        self.async_on_remove(
+            self._config_entry.add_update_listener(self._async_options_updated)
+        )
+
+    @staticmethod
+    async def _async_options_updated(
+        hass: HomeAssistant, config_entry: ConfigEntry
+    ) -> None:
+        """Handle options flow updates."""
+        await hass.config_entries.async_reload(config_entry.entry_id)
+
+    async def async_select_option(self, option: str) -> None:
+        """Handle the user selecting an option (scene name) from the dropdown."""
+        async with self._lock:
+            # Determine which slot matches the selected option
+            name_a = _scene_friendly_name(self.hass, self._scene_a)
+            if option == name_a:
+                self._active_slot = SLOT_A
+            else:
+                self._active_slot = SLOT_B
+
+            await self._activate_current_slot()
+
+    async def _activate_current_slot(self) -> None:
+        """Activate the scene in the current active slot."""
+        scene_id = self._scene_a if self._active_slot == SLOT_A else self._scene_b
+        _LOGGER.debug("Activating slot %s → %s", self._active_slot, scene_id)
+        await self.hass.services.async_call(
+            "scene", "turn_on", {"entity_id": scene_id}, blocking=True
+        )
+        self.async_write_ha_state()
+
+    async def async_toggle(self) -> None:
+        """Toggle between slot A and B."""
+        async with self._lock:
+            self._active_slot = SLOT_B if self._active_slot == SLOT_A else SLOT_A
+            await self._activate_current_slot()
+
+    async def async_set_scene(self, slot: str, scene_entity_id: str) -> None:
+        """Assign a scene to a slot, reactivating if the slot is currently active."""
+        async with self._lock:
+            if slot == SLOT_A:
+                self._scene_a = scene_entity_id
+            else:
+                self._scene_b = scene_entity_id
+
+            _LOGGER.debug("Set slot %s → %s", slot, scene_entity_id)
+
+            if self._active_slot == slot:
+                await self._activate_current_slot()
+            else:
+                self.async_write_ha_state()
+
+    async def async_activate(self, slot: str) -> None:
+        """Explicitly activate a specific slot."""
+        async with self._lock:
+            self._active_slot = slot
+            await self._activate_current_slot()

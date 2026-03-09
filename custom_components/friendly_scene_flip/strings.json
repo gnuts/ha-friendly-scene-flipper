@@ -1,0 +1,68 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Friendly Scene Flip",
+        "description": "Create a new scene flip that toggles between two scenes.",
+        "data": {
+          "name": "Name",
+          "scene_a": "Scene A",
+          "scene_b": "Scene B"
+        },
+        "data_description": {
+          "name": "A friendly name for this scene flip (e.g., 'Living Room Lights').",
+          "scene_a": "The scene to use for slot A (the initial 'on' scene).",
+          "scene_b": "The scene to use for slot B (the initial 'off' scene)."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This scene flip is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Reconfigure Scene Flip",
+        "data": {
+          "scene_a": "Scene A",
+          "scene_b": "Scene B"
+        },
+        "data_description": {
+          "scene_a": "The scene to use for slot A.",
+          "scene_b": "The scene to use for slot B."
+        }
+      }
+    }
+  },
+  "services": {
+    "toggle": {
+      "name": "Toggle",
+      "description": "Toggle between scene A and scene B."
+    },
+    "set_scene": {
+      "name": "Set scene",
+      "description": "Assign a scene to a slot. If the slot is currently active, the new scene activates immediately.",
+      "fields": {
+        "slot": {
+          "name": "Slot",
+          "description": "Which slot to assign the scene to ('a' or 'b')."
+        },
+        "scene_entity_id": {
+          "name": "Scene",
+          "description": "The scene entity ID to assign."
+        }
+      }
+    },
+    "activate": {
+      "name": "Activate",
+      "description": "Explicitly activate a specific slot.",
+      "fields": {
+        "slot": {
+          "name": "Slot",
+          "description": "Which slot to activate ('a' or 'b')."
+        }
+      }
+    }
+  }
+}
