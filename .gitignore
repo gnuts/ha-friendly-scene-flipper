@@ -24,3 +24,6 @@ config/.cloud/
 config/tts/
 config/deps/
 config/blueprints/
+config/.HA_VERSION
+config/.ha_run.lock
+config/home-assistant.log*

@@ -4,3 +4,14 @@ logger:
   default: info
   logs:
     custom_components.friendly_scene_flip: debug
+
+# Test scenes for Friendly Scene Flip development
+scene:
+  - name: "Day Mode"
+    entities: {}
+  - name: "Night Mode"
+    entities: {}
+  - name: "Movie Time"
+    entities: {}
+  - name: "Bright Lights"
+    entities: {}
