@@ -15,3 +15,12 @@ venv/
 .vscode/
 *.swp
 *.swo
+
+# Home Assistant dev container runtime artifacts
+config/.storage/*
+!config/.storage/.gitkeep
+config/home-assistant_v2.db*
+config/.cloud/
+config/tts/
+config/deps/
+config/blueprints/
