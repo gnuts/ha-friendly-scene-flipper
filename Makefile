@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install test lint lint-fix format scan ha-up ha-down ha-restart ha-logs clean
+.PHONY: help install test lint lint-fix format scan ha-up ha-down ha-restart ha-logs clean push push-gitlab push-origin
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -51,6 +51,17 @@ ha-logs: ## Tail HA logs (filtered to integration)
 
 ha-logs-all: ## Tail all HA logs
 	docker compose logs -f home-assistant
+
+# ── Git ───────────────────────────────────────────
+
+push: ## Push to all remotes (gitlab first, then origin) with tags
+	git push gitlab --tags && git push origin --tags
+
+push-gitlab: ## Push to gitlab remote with tags
+	git push gitlab --tags
+
+push-origin: ## Push to origin remote with tags
+	git push origin --tags
 
 # ── Housekeeping ──────────────────────────────────
 

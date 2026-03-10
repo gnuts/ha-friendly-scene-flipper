@@ -27,7 +27,7 @@ You never have to think about it. Toggle just works, and the right scene is alwa
 
 1. Open **HACS** in your Home Assistant instance
 2. Click the three-dot menu in the top right and select **Custom repositories**
-3. Paste `https://github.com/gnuts/ha-friendly-scene-flipper` and select **Integration** as the category
+3. Paste `https://gitlab.com/gnuts/ha-friendly-scene-flipper` and select **Integration** as the category
 4. Search for **Friendly Scene Flipper** and click **Install**
 5. Restart Home Assistant
 
