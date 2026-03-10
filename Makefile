@@ -34,7 +34,7 @@ format-check: ## Check formatting without changes
 # ── Dev Container ─────────────────────────────────
 
 ha-up: ## Start HA dev container
-	docker compose up -d
+	DOCKER_UID=$$(id -u) DOCKER_GID=$$(id -g) docker compose up -d
 
 ha-down: ## Stop HA dev container
 	docker compose down
