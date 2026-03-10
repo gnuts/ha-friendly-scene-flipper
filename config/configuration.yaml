@@ -25,3 +25,7 @@ scene:
     entities: {}
   - name: "Bright Lights"
     entities: {}
+  - name: "Dim Lights"
+    entities: {}
+  - name: "Cozy Evening"
+    entities: {}

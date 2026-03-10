@@ -3,7 +3,7 @@ views:
   - title: "Test Controls"
     path: default_view
     cards:
-      # Card 1 — Entity State
+      # Card 1 — Entity State + Attributes
       - type: entities
         title: "Testflip Entity"
         entities:
@@ -20,6 +20,30 @@ views:
             entity: select.testflip
             attribute: scene_b
             name: Scene B
+          - type: attribute
+            entity: select.testflip
+            attribute: skip_a
+            name: Skip A
+          - type: attribute
+            entity: select.testflip
+            attribute: skip_b
+            name: Skip B
+          - type: attribute
+            entity: select.testflip
+            attribute: flip_list_a
+            name: Flip List A
+          - type: attribute
+            entity: select.testflip
+            attribute: flip_list_b
+            name: Flip List B
+          - type: attribute
+            entity: select.testflip
+            attribute: flip_index_a
+            name: Flip Index A
+          - type: attribute
+            entity: select.testflip
+            attribute: flip_index_b
+            name: Flip Index B
 
       # Card 2 — Activity Log
       - type: logbook
@@ -31,6 +55,8 @@ views:
           - scene.night_mode
           - scene.movie_time
           - scene.bright_lights
+          - scene.dim_lights
+          - scene.cozy_evening
 
       # Card 3 — Core Actions
       - type: grid
@@ -64,14 +90,102 @@ views:
                 entity_id: select.testflip
                 slot: b
 
-      # Card 4 — Set Scene buttons
+      # Card 4 — Skipper Actions
+      - type: grid
+        title: "Skipper"
+        columns: 3
+        cards:
+          - type: button
+            name: Skip A
+            icon: mdi:skip-next
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.skip
+              data:
+                entity_id: select.testflip
+                slot: a
+                enable: true
+          - type: button
+            name: Skip B
+            icon: mdi:skip-next
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.skip
+              data:
+                entity_id: select.testflip
+                slot: b
+                enable: true
+          - type: button
+            name: Skip Both
+            icon: mdi:skip-forward
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.skip
+              data:
+                entity_id: select.testflip
+                slot: both
+                enable: true
+          - type: button
+            name: Clear Skip A
+            icon: mdi:close-circle-outline
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.skip
+              data:
+                entity_id: select.testflip
+                slot: a
+                enable: false
+          - type: button
+            name: Clear Skip B
+            icon: mdi:close-circle-outline
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.skip
+              data:
+                entity_id: select.testflip
+                slot: b
+                enable: false
+          - type: button
+            name: Clear All
+            icon: mdi:close-circle
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.skip
+              data:
+                entity_id: select.testflip
+                slot: both
+                enable: false
+
+      # Card 5 — Flipper Actions
+      - type: grid
+        title: "Flipper"
+        columns: 2
+        cards:
+          - type: button
+            name: Flip Prev
+            icon: mdi:skip-previous
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.flip_prev
+              data:
+                entity_id: select.testflip
+          - type: button
+            name: Flip Next
+            icon: mdi:skip-next-outline
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.flip_next
+              data:
+                entity_id: select.testflip
+
+      # Card 6 — Set Scene buttons
       - type: vertical-stack
         title: "Set Scene"
         cards:
           - type: markdown
             content: "### Assign to Slot A"
           - type: grid
-            columns: 4
+            columns: 3
             cards:
               - type: button
                 name: Day Mode
@@ -113,10 +227,30 @@ views:
                     entity_id: select.testflip
                     slot: a
                     scene_entity_id: scene.bright_lights
+              - type: button
+                name: Dim Lights
+                icon: mdi:lightbulb-on-10
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: a
+                    scene_entity_id: scene.dim_lights
+              - type: button
+                name: Cozy Evening
+                icon: mdi:fireplace
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: a
+                    scene_entity_id: scene.cozy_evening
           - type: markdown
             content: "### Assign to Slot B"
           - type: grid
-            columns: 4
+            columns: 3
             cards:
               - type: button
                 name: Day Mode
@@ -158,8 +292,28 @@ views:
                     entity_id: select.testflip
                     slot: b
                     scene_entity_id: scene.bright_lights
+              - type: button
+                name: Dim Lights
+                icon: mdi:lightbulb-on-10
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: b
+                    scene_entity_id: scene.dim_lights
+              - type: button
+                name: Cozy Evening
+                icon: mdi:fireplace
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: b
+                    scene_entity_id: scene.cozy_evening
 
-      # Card 5 — Available Scenes
+      # Card 7 — Available Scenes
       - type: entities
         title: "Available Scenes"
         entities:
@@ -167,3 +321,5 @@ views:
           - entity: scene.night_mode
           - entity: scene.movie_time
           - entity: scene.bright_lights
+          - entity: scene.dim_lights
+          - entity: scene.cozy_evening
