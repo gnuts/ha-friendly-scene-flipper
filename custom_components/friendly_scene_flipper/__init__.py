@@ -140,7 +140,10 @@ def _register_services(hass: HomeAssistant) -> None:
         DOMAIN,
         "toggle",
         handle_toggle,
-        schema=vol.Schema({vol.Optional("entity_id"): cv.entity_ids}),
+        schema=vol.Schema(
+            {vol.Optional("entity_id"): cv.entity_ids},
+            extra=vol.ALLOW_EXTRA,
+        ),
     )
 
     hass.services.async_register(
@@ -152,7 +155,8 @@ def _register_services(hass: HomeAssistant) -> None:
                 vol.Optional("entity_id"): cv.entity_ids,
                 vol.Required("slot"): SLOT_SCHEMA,
                 vol.Required("scene_entity_id"): cv.entity_id,
-            }
+            },
+            extra=vol.ALLOW_EXTRA,
         ),
     )
 
@@ -164,7 +168,8 @@ def _register_services(hass: HomeAssistant) -> None:
             {
                 vol.Optional("entity_id"): cv.entity_ids,
                 vol.Required("slot"): SLOT_SCHEMA,
-            }
+            },
+            extra=vol.ALLOW_EXTRA,
         ),
     )
 
@@ -177,11 +182,15 @@ def _register_services(hass: HomeAssistant) -> None:
                 vol.Optional("entity_id"): cv.entity_ids,
                 vol.Required("slot"): SLOT_WITH_BOTH_SCHEMA,
                 vol.Required("enable"): cv.boolean,
-            }
+            },
+            extra=vol.ALLOW_EXTRA,
         ),
     )
 
-    entity_id_schema = vol.Schema({vol.Optional("entity_id"): cv.entity_ids})
+    entity_id_schema = vol.Schema(
+        {vol.Optional("entity_id"): cv.entity_ids},
+        extra=vol.ALLOW_EXTRA,
+    )
 
     hass.services.async_register(
         DOMAIN,
