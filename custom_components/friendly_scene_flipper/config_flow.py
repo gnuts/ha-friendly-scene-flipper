@@ -47,6 +47,15 @@ class FriendlySceneFlipperConfigFlow(ConfigFlow, domain=DOMAIN):
             ),
         )
 
+    async def async_step_import(self, import_data: dict[str, Any]) -> FlowResult:
+        """Import a config entry from configuration.yaml."""
+        await self.async_set_unique_id(import_data[CONF_NAME])
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(
+            title=import_data[CONF_NAME],
+            data=import_data,
+        )
+
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):

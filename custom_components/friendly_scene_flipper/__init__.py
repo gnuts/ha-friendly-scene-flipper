@@ -6,17 +6,50 @@ import logging
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+from homeassistant import config_entries
+from homeassistant.const import CONF_NAME
 from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN, SLOT_A, SLOT_B, SLOT_BOTH
+from .const import CONF_SCENE_A, CONF_SCENE_B, DOMAIN, SLOT_A, SLOT_B, SLOT_BOTH
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant, ServiceCall
+    from homeassistant.helpers.typing import ConfigType
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["select"]
+
+ENTRY_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_NAME): cv.string,
+        vol.Required(CONF_SCENE_A): cv.entity_id,
+        vol.Required(CONF_SCENE_B): cv.entity_id,
+    }
+)
+
+CONFIG_SCHEMA = vol.Schema(
+    {DOMAIN: vol.All(cv.ensure_list, [ENTRY_SCHEMA])},
+    extra=vol.ALLOW_EXTRA,
+)
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up Friendly Scene Flipper from configuration.yaml."""
+    if DOMAIN not in config:
+        return True
+
+    for entry_config in config[DOMAIN]:
+        hass.async_create_task(
+            hass.config_entries.flow.async_init(
+                DOMAIN,
+                context={"source": config_entries.SOURCE_IMPORT},
+                data=entry_config,
+            )
+        )
+
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

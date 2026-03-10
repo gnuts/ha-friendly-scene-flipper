@@ -10,6 +10,11 @@ lovelace:
       show_in_sidebar: true
       filename: dashboards/testing.yaml
 
+friendly_scene_flipper:
+  - name: "testflip"
+    scene_a: scene.day_mode
+    scene_b: scene.night_mode
+
 logger:
   default: info
   logs:
