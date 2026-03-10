@@ -1,6 +1,6 @@
-"""Constants for Friendly Scene Flip."""
+"""Constants for Friendly Scene Flipper."""
 
-DOMAIN = "friendly_scene_flip"
+DOMAIN = "friendly_scene_flipper"
 
 CONF_SCENE_A = "scene_a"
 CONF_SCENE_B = "scene_b"

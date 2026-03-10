@@ -1,21 +1,21 @@
-"""Tests for the Friendly Scene Flip config flow."""
+"""Tests for the Friendly Scene Flipper config flow."""
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from typing import TYPE_CHECKING
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
-from custom_components.friendly_scene_flip.const import CONF_SCENE_A, CONF_SCENE_B, DOMAIN
+from custom_components.friendly_scene_flipper.const import CONF_SCENE_A, CONF_SCENE_B, DOMAIN
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 async def test_user_flow(hass: HomeAssistant) -> None:
     """Test the full user config flow."""
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": config_entries.SOURCE_USER}
-    )
+    result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "user"
 
@@ -35,9 +35,7 @@ async def test_user_flow(hass: HomeAssistant) -> None:
 
 async def test_duplicate_entry(hass: HomeAssistant) -> None:
     """Test that duplicate names are rejected."""
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": config_entries.SOURCE_USER}
-    )
+    result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
     await hass.config_entries.flow.async_configure(
         result["flow_id"],
         {
@@ -48,9 +46,7 @@ async def test_duplicate_entry(hass: HomeAssistant) -> None:
     )
 
     # Try to add another with the same name
-    result2 = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": config_entries.SOURCE_USER}
-    )
+    result2 = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
     result2 = await hass.config_entries.flow.async_configure(
         result2["flow_id"],
         {

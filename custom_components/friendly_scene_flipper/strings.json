@@ -2,28 +2,28 @@
   "config": {
     "step": {
       "user": {
-        "title": "Add Friendly Scene Flip",
-        "description": "Create a new scene flip that toggles between two scenes.",
+        "title": "Add Scene Flipper",
+        "description": "Create a new scene flipper that toggles between two scenes.",
         "data": {
           "name": "Name",
           "scene_a": "Scene A",
           "scene_b": "Scene B"
         },
         "data_description": {
-          "name": "A friendly name for this scene flip (e.g., 'Living Room Lights').",
+          "name": "A friendly name for this scene flipper (e.g., 'Living Room Lights').",
           "scene_a": "The scene to use for slot A (the initial 'on' scene).",
           "scene_b": "The scene to use for slot B (the initial 'off' scene)."
         }
       }
     },
     "abort": {
-      "already_configured": "This scene flip is already configured."
+      "already_configured": "This scene flipper is already configured."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Reconfigure Scene Flip",
+        "title": "Reconfigure Scene Flipper",
         "data": {
           "scene_a": "Scene A",
           "scene_b": "Scene B"

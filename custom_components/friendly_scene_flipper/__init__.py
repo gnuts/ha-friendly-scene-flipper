@@ -1,16 +1,18 @@
-"""Friendly Scene Flip — toggle between two scene slots."""
+"""Friendly Scene Flipper — toggle between two scene slots."""
 
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import voluptuous as vol
-
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, ServiceCall
-from homeassistant.helpers import config_validation as cv, entity_platform
+from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN, SLOT_A, SLOT_B
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant, ServiceCall
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,7 +20,7 @@ PLATFORMS = ["select"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Friendly Scene Flip from a config entry."""
+    """Set up Friendly Scene Flipper from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -52,7 +54,7 @@ def _get_entity(hass: HomeAssistant, call: ServiceCall):
         entity_ids = [entity_ids]
 
     entities = []
-    for entry_id, entity in hass.data[DOMAIN].items():
+    for _entry_id, entity in hass.data[DOMAIN].items():
         if entity.entity_id in entity_ids:
             entities.append(entity)
 
@@ -87,9 +89,7 @@ def _register_services(hass: HomeAssistant) -> None:
         DOMAIN,
         "toggle",
         handle_toggle,
-        schema=vol.Schema(
-            {vol.Required("entity_id"): cv.entity_ids}
-        ),
+        schema=vol.Schema({vol.Required("entity_id"): cv.entity_ids}),
     )
 
     hass.services.async_register(

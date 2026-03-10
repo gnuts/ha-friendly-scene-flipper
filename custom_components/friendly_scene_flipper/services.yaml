@@ -2,13 +2,13 @@ toggle:
   target:
     entity:
       domain: select
-      integration: friendly_scene_flip
+      integration: friendly_scene_flipper
 
 set_scene:
   target:
     entity:
       domain: select
-      integration: friendly_scene_flip
+      integration: friendly_scene_flipper
   fields:
     slot:
       required: true
@@ -27,7 +27,7 @@ activate:
   target:
     entity:
       domain: select
-      integration: friendly_scene_flip
+      integration: friendly_scene_flipper
   fields:
     slot:
       required: true

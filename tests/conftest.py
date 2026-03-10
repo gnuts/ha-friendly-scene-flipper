@@ -1,18 +1,20 @@
-"""Shared test fixtures for Friendly Scene Flip."""
+"""Shared test fixtures for Friendly Scene Flipper."""
 
 from __future__ import annotations
 
-from unittest.mock import patch
+from typing import TYPE_CHECKING
 
 import pytest
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from homeassistant.core import HomeAssistant
-
-from custom_components.friendly_scene_flip.const import (
+from custom_components.friendly_scene_flipper.const import (
     CONF_SCENE_A,
     CONF_SCENE_B,
     DOMAIN,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 pytest_plugins = "pytest_homeassistant_custom_component"
 
@@ -32,9 +34,7 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 @pytest.fixture
 async def setup_entry(hass: HomeAssistant):
     """Create and set up a config entry."""
-    from homeassistant.config_entries import ConfigEntry
-
-    entry = ConfigEntry(
+    entry = MockConfigEntry(
         version=1,
         minor_version=1,
         domain=DOMAIN,
@@ -46,9 +46,7 @@ async def setup_entry(hass: HomeAssistant):
     entry.add_to_hass(hass)
 
     # Set up mock scene states so friendly name resolution works
-    hass.states.async_set(
-        "scene.daylight", "scening", {"friendly_name": "Daylight"}
-    )
+    hass.states.async_set("scene.daylight", "scening", {"friendly_name": "Daylight"})
     hass.states.async_set(
         "scene.all_lights_off",
         "scening",

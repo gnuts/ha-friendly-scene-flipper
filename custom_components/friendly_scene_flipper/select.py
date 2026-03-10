@@ -1,15 +1,13 @@
-"""Select entity for Friendly Scene Flip."""
+"""Select entity for Friendly Scene Flipper."""
 
 from __future__ import annotations
 
 import asyncio
 import logging
+from typing import TYPE_CHECKING
 
 from homeassistant.components.select import SelectEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import (
@@ -23,6 +21,11 @@ from .const import (
     SLOT_B,
 )
 
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -31,8 +34,8 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the Friendly Scene Flip select entity."""
-    entity = FriendlySceneFlipSelect(config_entry)
+    """Set up the Friendly Scene Flipper select entity."""
+    entity = FriendlySceneFlipperSelect(config_entry)
     async_add_entities([entity])
 
     # Store entity reference for service handlers
@@ -49,13 +52,13 @@ def _scene_friendly_name(hass: HomeAssistant, entity_id: str) -> str:
     return entity_id.removeprefix("scene.")
 
 
-class FriendlySceneFlipSelect(SelectEntity, RestoreEntity):
+class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
     """A select entity that toggles between two scene slots."""
 
     _attr_has_entity_name = True
 
     def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize the scene flip select entity."""
+        """Initialize the scene flipper select entity."""
         self._config_entry = config_entry
         self._scene_a: str = config_entry.data[CONF_SCENE_A]
         self._scene_b: str = config_entry.data[CONF_SCENE_B]
@@ -63,7 +66,7 @@ class FriendlySceneFlipSelect(SelectEntity, RestoreEntity):
         self._lock = asyncio.Lock()
 
         self._attr_unique_id = config_entry.entry_id
-        self._attr_name = config_entry.data.get(CONF_NAME, "Scene Flip")
+        self._attr_name = config_entry.data.get(CONF_NAME, "Scene Flipper")
 
     @property
     def options(self) -> list[str]:
@@ -118,14 +121,10 @@ class FriendlySceneFlipSelect(SelectEntity, RestoreEntity):
             )
 
         # Listen for options flow updates
-        self.async_on_remove(
-            self._config_entry.add_update_listener(self._async_options_updated)
-        )
+        self.async_on_remove(self._config_entry.add_update_listener(self._async_options_updated))
 
     @staticmethod
-    async def _async_options_updated(
-        hass: HomeAssistant, config_entry: ConfigEntry
-    ) -> None:
+    async def _async_options_updated(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
         """Handle options flow updates."""
         await hass.config_entries.async_reload(config_entry.entry_id)
 
@@ -145,9 +144,7 @@ class FriendlySceneFlipSelect(SelectEntity, RestoreEntity):
         """Activate the scene in the current active slot."""
         scene_id = self._scene_a if self._active_slot == SLOT_A else self._scene_b
         _LOGGER.debug("Activating slot %s → %s", self._active_slot, scene_id)
-        await self.hass.services.async_call(
-            "scene", "turn_on", {"entity_id": scene_id}, blocking=True
-        )
+        await self.hass.services.async_call("scene", "turn_on", {"entity_id": scene_id}, blocking=True)
         self.async_write_ha_state()
 
     async def async_toggle(self) -> None:

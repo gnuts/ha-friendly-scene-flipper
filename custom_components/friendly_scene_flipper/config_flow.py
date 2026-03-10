@@ -1,28 +1,27 @@
-"""Config flow for Friendly Scene Flip."""
+"""Config flow for Friendly Scene Flipper."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig
 
 from .const import CONF_SCENE_A, CONF_SCENE_B, DOMAIN
 
+if TYPE_CHECKING:
+    from homeassistant.data_entry_flow import FlowResult
 
-class FriendlySceneFlipConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Friendly Scene Flip."""
+
+class FriendlySceneFlipperConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for Friendly Scene Flipper."""
 
     VERSION = 1
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle the initial step."""
         if user_input is not None:
             await self.async_set_unique_id(user_input[CONF_NAME])
@@ -52,19 +51,13 @@ class FriendlySceneFlipConfigFlow(ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow."""
-        return FriendlySceneFlipOptionsFlow(config_entry)
+        return FriendlySceneFlipperOptionsFlow()
 
 
-class FriendlySceneFlipOptionsFlow(OptionsFlow):
-    """Handle options flow for Friendly Scene Flip."""
+class FriendlySceneFlipperOptionsFlow(OptionsFlow):
+    """Handle options flow for Friendly Scene Flipper."""
 
-    def __init__(self, config_entry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
-
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
