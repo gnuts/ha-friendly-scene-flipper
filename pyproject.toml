@@ -11,6 +11,7 @@ asyncio_mode = "auto"
 
 [dependency-groups]
 dev = [
+    "bandit",
     "pytest",
     "pytest-homeassistant-custom-component",
     "ruff",

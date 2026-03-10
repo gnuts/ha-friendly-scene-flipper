@@ -31,8 +31,9 @@ format: ## Run ruff formatter
 format-check: ## Check formatting without changes
 	uv run ruff format --check .
 
-scan: ## Run Trivy security scan on project dependencies
-	docker run --rm -v $$(pwd):/workspace:ro aquasec/trivy:latest fs /workspace
+scan: ## Run security scans (Bandit + Trivy)
+	uv run bandit -r custom_components/
+	docker run --rm -v $$(pwd):/workspace:ro aquasec/trivy:latest fs --scanners vuln,secret,misconfig /workspace
 
 # ── Dev Container ─────────────────────────────────
 
