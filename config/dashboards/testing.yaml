@@ -1,0 +1,169 @@
+title: "FSF Testing"
+views:
+  - title: "Test Controls"
+    path: default_view
+    cards:
+      # Card 1 — Entity State
+      - type: entities
+        title: "Testflip Entity"
+        entities:
+          - entity: select.testflip
+          - type: attribute
+            entity: select.testflip
+            attribute: active_slot
+            name: Active Slot
+          - type: attribute
+            entity: select.testflip
+            attribute: scene_a
+            name: Scene A
+          - type: attribute
+            entity: select.testflip
+            attribute: scene_b
+            name: Scene B
+
+      # Card 2 — Activity Log
+      - type: logbook
+        title: "Scene Activity"
+        hours_to_show: 1
+        entities:
+          - select.testflip
+          - scene.day_mode
+          - scene.night_mode
+          - scene.movie_time
+          - scene.bright_lights
+
+      # Card 3 — Core Actions
+      - type: grid
+        title: "Core Actions"
+        columns: 3
+        cards:
+          - type: button
+            name: Toggle
+            icon: mdi:swap-horizontal
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.toggle
+              data:
+                entity_id: select.testflip
+          - type: button
+            name: Activate A
+            icon: mdi:alpha-a-circle
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.activate
+              data:
+                entity_id: select.testflip
+                slot: a
+          - type: button
+            name: Activate B
+            icon: mdi:alpha-b-circle
+            tap_action:
+              action: perform-action
+              perform_action: friendly_scene_flipper.activate
+              data:
+                entity_id: select.testflip
+                slot: b
+
+      # Card 4 — Set Scene buttons
+      - type: vertical-stack
+        title: "Set Scene"
+        cards:
+          - type: markdown
+            content: "### Assign to Slot A"
+          - type: grid
+            columns: 4
+            cards:
+              - type: button
+                name: Day Mode
+                icon: mdi:white-balance-sunny
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: a
+                    scene_entity_id: scene.day_mode
+              - type: button
+                name: Night Mode
+                icon: mdi:moon-waning-crescent
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: a
+                    scene_entity_id: scene.night_mode
+              - type: button
+                name: Movie Time
+                icon: mdi:movie-open
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: a
+                    scene_entity_id: scene.movie_time
+              - type: button
+                name: Bright Lights
+                icon: mdi:lightbulb-on
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: a
+                    scene_entity_id: scene.bright_lights
+          - type: markdown
+            content: "### Assign to Slot B"
+          - type: grid
+            columns: 4
+            cards:
+              - type: button
+                name: Day Mode
+                icon: mdi:white-balance-sunny
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: b
+                    scene_entity_id: scene.day_mode
+              - type: button
+                name: Night Mode
+                icon: mdi:moon-waning-crescent
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: b
+                    scene_entity_id: scene.night_mode
+              - type: button
+                name: Movie Time
+                icon: mdi:movie-open
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: b
+                    scene_entity_id: scene.movie_time
+              - type: button
+                name: Bright Lights
+                icon: mdi:lightbulb-on
+                tap_action:
+                  action: perform-action
+                  perform_action: friendly_scene_flipper.set_scene
+                  data:
+                    entity_id: select.testflip
+                    slot: b
+                    scene_entity_id: scene.bright_lights
+
+      # Card 5 — Available Scenes
+      - type: entities
+        title: "Available Scenes"
+        entities:
+          - entity: scene.day_mode
+          - entity: scene.night_mode
+          - entity: scene.movie_time
+          - entity: scene.bright_lights

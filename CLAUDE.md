@@ -1,10 +1,10 @@
-# Friendly Scene Flip — Project Conventions
+# Friendly Scene Flipper — Project Conventions
 
 ## Overview
-Home Assistant custom integration (`friendly_scene_flip`) that toggles between two scene slots (A and B). A `select` entity provides the UI dropdown; services enable automation control.
+Home Assistant custom integration (`friendly_scene_flipper`) that toggles between two scene slots (A and B). A `select` entity provides the UI dropdown; services enable automation control.
 
 ## Structure
-- `custom_components/friendly_scene_flip/` — integration code
+- `custom_components/friendly_scene_flipper/` — integration code
 - `tests/` — pytest test suite using `pytest-homeassistant-custom-component`
 
 ## Code Style

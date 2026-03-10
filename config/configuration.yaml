@@ -1,11 +1,21 @@
 default_config:
 
+lovelace:
+  mode: storage
+  dashboards:
+    fsf-testing:
+      mode: yaml
+      title: "FSF Testing"
+      icon: mdi:test-tube
+      show_in_sidebar: true
+      filename: dashboards/testing.yaml
+
 logger:
   default: info
   logs:
-    custom_components.friendly_scene_flip: debug
+    custom_components.friendly_scene_flipper: debug
 
-# Test scenes for Friendly Scene Flip development
+# Test scenes for Friendly Scene Flipper development
 scene:
   - name: "Day Mode"
     entities: {}
