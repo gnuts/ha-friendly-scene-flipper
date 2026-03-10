@@ -14,6 +14,8 @@ from .const import (
     ATTR_ACTIVE_SLOT,
     ATTR_SCENE_A,
     ATTR_SCENE_B,
+    ATTR_SKIP_A,
+    ATTR_SKIP_B,
     CONF_SCENE_A,
     CONF_SCENE_B,
     DOMAIN,
@@ -63,6 +65,8 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
         self._scene_a: str = config_entry.data[CONF_SCENE_A]
         self._scene_b: str = config_entry.data[CONF_SCENE_B]
         self._active_slot: str = SLOT_A
+        self._skip_a: bool = False
+        self._skip_b: bool = False
         self._lock = asyncio.Lock()
 
         self._attr_unique_id = config_entry.entry_id
@@ -92,6 +96,8 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
             ATTR_ACTIVE_SLOT: self._active_slot,
             ATTR_SCENE_A: self._scene_a,
             ATTR_SCENE_B: self._scene_b,
+            ATTR_SKIP_A: self._skip_a,
+            ATTR_SKIP_B: self._skip_b,
         }
 
     async def async_added_to_hass(self) -> None:
@@ -112,12 +118,17 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
             if restored_b:
                 self._scene_b = restored_b
 
+            self._skip_a = bool(last_state.attributes.get(ATTR_SKIP_A, False))
+            self._skip_b = bool(last_state.attributes.get(ATTR_SKIP_B, False))
+
             _LOGGER.debug(
-                "Restored %s: active_slot=%s, scene_a=%s, scene_b=%s",
+                "Restored %s: active_slot=%s, scene_a=%s, scene_b=%s, skip_a=%s, skip_b=%s",
                 self.entity_id,
                 self._active_slot,
                 self._scene_a,
                 self._scene_b,
+                self._skip_a,
+                self._skip_b,
             )
 
         # Listen for options flow updates
@@ -138,11 +149,27 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
             else:
                 self._active_slot = SLOT_B
 
-            await self._activate_current_slot()
+            await self._activate_current_slot(check_skip=False)
 
-    async def _activate_current_slot(self) -> None:
+    def _should_skip_slot(self) -> bool:
+        """Check if the current slot's skip flag is set, and reset it if so."""
+        if self._active_slot == SLOT_A and self._skip_a:
+            self._skip_a = False
+            return True
+        if self._active_slot == SLOT_B and self._skip_b:
+            self._skip_b = False
+            return True
+        return False
+
+    async def _activate_current_slot(self, *, check_skip: bool = False) -> None:
         """Activate the scene in the current active slot."""
         scene_id = self._scene_a if self._active_slot == SLOT_A else self._scene_b
+
+        if check_skip and self._should_skip_slot():
+            _LOGGER.debug("Skipping activation of slot %s → %s (skip flag was set)", self._active_slot, scene_id)
+            self.async_write_ha_state()
+            return
+
         _LOGGER.debug("Activating slot %s → %s", self._active_slot, scene_id)
         await self.hass.services.async_call("scene", "turn_on", {"entity_id": scene_id}, blocking=True)
         self.async_write_ha_state()
@@ -151,7 +178,7 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
         """Toggle between slot A and B."""
         async with self._lock:
             self._active_slot = SLOT_B if self._active_slot == SLOT_A else SLOT_A
-            await self._activate_current_slot()
+            await self._activate_current_slot(check_skip=False)
 
     async def async_set_scene(self, slot: str, scene_entity_id: str) -> None:
         """Assign a scene to a slot, reactivating if the slot is currently active."""
@@ -164,7 +191,7 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
             _LOGGER.debug("Set slot %s → %s", slot, scene_entity_id)
 
             if self._active_slot == slot:
-                await self._activate_current_slot()
+                await self._activate_current_slot(check_skip=True)
             else:
                 self.async_write_ha_state()
 
@@ -172,4 +199,15 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
         """Explicitly activate a specific slot."""
         async with self._lock:
             self._active_slot = slot
-            await self._activate_current_slot()
+            await self._activate_current_slot(check_skip=True)
+
+    async def async_skip(self, slot: str, enable: bool) -> None:
+        """Set or clear the skip flag for a slot."""
+        async with self._lock:
+            if slot in (SLOT_A, "both"):
+                self._skip_a = enable
+            if slot in (SLOT_B, "both"):
+                self._skip_b = enable
+
+            _LOGGER.debug("Skip flags: skip_a=%s, skip_b=%s", self._skip_a, self._skip_b)
+            self.async_write_ha_state()

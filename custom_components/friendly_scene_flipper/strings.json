@@ -63,6 +63,20 @@
           "description": "Which slot to activate ('a' or 'b')."
         }
       }
+    },
+    "skip": {
+      "name": "Skip",
+      "description": "Skip the next automatic scene activation for a slot. The skip flag is one-shot: it resets after one skipped activation.",
+      "fields": {
+        "slot": {
+          "name": "Slot",
+          "description": "Which slot to set the skip flag for ('a', 'b', or 'both')."
+        },
+        "enable": {
+          "name": "Enable",
+          "description": "True to arm the skip, false to clear it."
+        }
+      }
     }
   }
 }

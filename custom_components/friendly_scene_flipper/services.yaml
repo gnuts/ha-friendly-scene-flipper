@@ -36,3 +36,22 @@ activate:
           options:
             - "a"
             - "b"
+
+skip:
+  target:
+    entity:
+      domain: select
+      integration: friendly_scene_flipper
+  fields:
+    slot:
+      required: true
+      selector:
+        select:
+          options:
+            - "a"
+            - "b"
+            - "both"
+    enable:
+      required: true
+      selector:
+        boolean:

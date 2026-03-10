@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN, SLOT_A, SLOT_B
+from .const import DOMAIN, SLOT_A, SLOT_B, SLOT_BOTH
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -41,7 +41,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Unregister services if no entries remain
     if not hass.data[DOMAIN]:
-        for service in ("toggle", "set_scene", "activate"):
+        for service in ("toggle", "set_scene", "activate", "skip"):
             hass.services.async_remove(DOMAIN, service)
 
     return unload_ok
@@ -62,6 +62,7 @@ def _get_entity(hass: HomeAssistant, call: ServiceCall):
 
 
 SLOT_SCHEMA = vol.In([SLOT_A, SLOT_B])
+SLOT_WITH_BOTH_SCHEMA = vol.In([SLOT_A, SLOT_B, SLOT_BOTH])
 
 
 def _register_services(hass: HomeAssistant) -> None:
@@ -84,6 +85,13 @@ def _register_services(hass: HomeAssistant) -> None:
         slot = call.data["slot"]
         for entity in _get_entity(hass, call):
             await entity.async_activate(slot)
+
+    async def handle_skip(call: ServiceCall) -> None:
+        """Handle the skip service."""
+        slot = call.data["slot"]
+        enable = call.data["enable"]
+        for entity in _get_entity(hass, call):
+            await entity.async_skip(slot, enable)
 
     hass.services.async_register(
         DOMAIN,
@@ -113,6 +121,19 @@ def _register_services(hass: HomeAssistant) -> None:
             {
                 vol.Required("entity_id"): cv.entity_ids,
                 vol.Required("slot"): SLOT_SCHEMA,
+            }
+        ),
+    )
+
+    hass.services.async_register(
+        DOMAIN,
+        "skip",
+        handle_skip,
+        schema=vol.Schema(
+            {
+                vol.Required("entity_id"): cv.entity_ids,
+                vol.Required("slot"): SLOT_WITH_BOTH_SCHEMA,
+                vol.Required("enable"): cv.boolean,
             }
         ),
     )
