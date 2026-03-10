@@ -41,7 +41,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Unregister services if no entries remain
     if not hass.data[DOMAIN]:
-        for service in ("toggle", "set_scene", "activate", "skip"):
+        for service in ("toggle", "set_scene", "activate", "skip", "flip_next", "flip_prev"):
             hass.services.async_remove(DOMAIN, service)
 
     return unload_ok
@@ -93,6 +93,16 @@ def _register_services(hass: HomeAssistant) -> None:
         for entity in _get_entity(hass, call):
             await entity.async_skip(slot, enable)
 
+    async def handle_flip_next(call: ServiceCall) -> None:
+        """Handle the flip_next service."""
+        for entity in _get_entity(hass, call):
+            await entity.async_flip_next()
+
+    async def handle_flip_prev(call: ServiceCall) -> None:
+        """Handle the flip_prev service."""
+        for entity in _get_entity(hass, call):
+            await entity.async_flip_prev()
+
     hass.services.async_register(
         DOMAIN,
         "toggle",
@@ -136,4 +146,20 @@ def _register_services(hass: HomeAssistant) -> None:
                 vol.Required("enable"): cv.boolean,
             }
         ),
+    )
+
+    entity_id_schema = vol.Schema({vol.Required("entity_id"): cv.entity_ids})
+
+    hass.services.async_register(
+        DOMAIN,
+        "flip_next",
+        handle_flip_next,
+        schema=entity_id_schema,
+    )
+
+    hass.services.async_register(
+        DOMAIN,
+        "flip_prev",
+        handle_flip_prev,
+        schema=entity_id_schema,
     )

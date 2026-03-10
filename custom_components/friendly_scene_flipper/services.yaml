@@ -55,3 +55,15 @@ skip:
       required: true
       selector:
         boolean:
+
+flip_next:
+  target:
+    entity:
+      domain: select
+      integration: friendly_scene_flipper
+
+flip_prev:
+  target:
+    entity:
+      domain: select
+      integration: friendly_scene_flipper

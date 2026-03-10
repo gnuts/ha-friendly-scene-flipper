@@ -10,7 +10,7 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig
 
-from .const import CONF_SCENE_A, CONF_SCENE_B, DOMAIN
+from .const import CONF_FLIP_LIST_A, CONF_FLIP_LIST_B, CONF_SCENE_A, CONF_SCENE_B, DOMAIN
 
 if TYPE_CHECKING:
     from homeassistant.data_entry_flow import FlowResult
@@ -77,6 +77,18 @@ class FriendlySceneFlipperOptionsFlow(OptionsFlow):
                         default=self.config_entry.data.get(CONF_SCENE_B),
                     ): EntitySelector(
                         EntitySelectorConfig(domain="scene"),
+                    ),
+                    vol.Optional(
+                        CONF_FLIP_LIST_A,
+                        default=self.config_entry.options.get(CONF_FLIP_LIST_A, []),
+                    ): EntitySelector(
+                        EntitySelectorConfig(domain="scene", multiple=True),
+                    ),
+                    vol.Optional(
+                        CONF_FLIP_LIST_B,
+                        default=self.config_entry.options.get(CONF_FLIP_LIST_B, []),
+                    ): EntitySelector(
+                        EntitySelectorConfig(domain="scene", multiple=True),
                     ),
                 }
             ),

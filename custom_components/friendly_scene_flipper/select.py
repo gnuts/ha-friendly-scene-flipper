@@ -12,10 +12,16 @@ from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import (
     ATTR_ACTIVE_SLOT,
+    ATTR_FLIP_INDEX_A,
+    ATTR_FLIP_INDEX_B,
+    ATTR_FLIP_LIST_A,
+    ATTR_FLIP_LIST_B,
     ATTR_SCENE_A,
     ATTR_SCENE_B,
     ATTR_SKIP_A,
     ATTR_SKIP_B,
+    CONF_FLIP_LIST_A,
+    CONF_FLIP_LIST_B,
     CONF_SCENE_A,
     CONF_SCENE_B,
     DOMAIN,
@@ -69,6 +75,12 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
         self._skip_b: bool = False
         self._lock = asyncio.Lock()
 
+        # Flip lists from options (not initial config)
+        self._flip_list_a: list[str] = list(config_entry.options.get(CONF_FLIP_LIST_A, []))
+        self._flip_list_b: list[str] = list(config_entry.options.get(CONF_FLIP_LIST_B, []))
+        self._flip_index_a: int = 0
+        self._flip_index_b: int = 0
+
         self._attr_unique_id = config_entry.entry_id
         self._attr_name = config_entry.data.get(CONF_NAME, "Scene Flipper")
 
@@ -98,7 +110,22 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
             ATTR_SCENE_B: self._scene_b,
             ATTR_SKIP_A: self._skip_a,
             ATTR_SKIP_B: self._skip_b,
+            ATTR_FLIP_LIST_A: self._flip_list_a,
+            ATTR_FLIP_LIST_B: self._flip_list_b,
+            ATTR_FLIP_INDEX_A: self._flip_index_a,
+            ATTR_FLIP_INDEX_B: self._flip_index_b,
         }
+
+    def _clamp_flip_indices(self) -> None:
+        """Clamp flip indices to valid bounds after list changes."""
+        if self._flip_list_a:
+            self._flip_index_a = min(self._flip_index_a, len(self._flip_list_a) - 1)
+        else:
+            self._flip_index_a = 0
+        if self._flip_list_b:
+            self._flip_index_b = min(self._flip_index_b, len(self._flip_list_b) - 1)
+        else:
+            self._flip_index_b = 0
 
     async def async_added_to_hass(self) -> None:
         """Restore state on startup without triggering scenes."""
@@ -120,6 +147,11 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
 
             self._skip_a = bool(last_state.attributes.get(ATTR_SKIP_A, False))
             self._skip_b = bool(last_state.attributes.get(ATTR_SKIP_B, False))
+
+            # Restore flip indices
+            self._flip_index_a = int(last_state.attributes.get(ATTR_FLIP_INDEX_A, 0))
+            self._flip_index_b = int(last_state.attributes.get(ATTR_FLIP_INDEX_B, 0))
+            self._clamp_flip_indices()
 
             _LOGGER.debug(
                 "Restored %s: active_slot=%s, scene_a=%s, scene_b=%s, skip_a=%s, skip_b=%s",
@@ -211,3 +243,37 @@ class FriendlySceneFlipperSelect(SelectEntity, RestoreEntity):
 
             _LOGGER.debug("Skip flags: skip_a=%s, skip_b=%s", self._skip_a, self._skip_b)
             self.async_write_ha_state()
+
+    async def async_flip_next(self) -> None:
+        """Advance to the next scene in the active slot's flip list."""
+        async with self._lock:
+            await self._flip(direction=1)
+
+    async def async_flip_prev(self) -> None:
+        """Go to the previous scene in the active slot's flip list."""
+        async with self._lock:
+            await self._flip(direction=-1)
+
+    async def _flip(self, *, direction: int) -> None:
+        """Cycle through the flip list for the active slot."""
+        flip_list = self._flip_list_a if self._active_slot == SLOT_A else self._flip_list_b
+
+        if not flip_list:
+            _LOGGER.warning("Flip list for slot %s is empty, nothing to do", self._active_slot)
+            return
+
+        if self._active_slot == SLOT_A:
+            self._flip_index_a = (self._flip_index_a + direction) % len(flip_list)
+            self._scene_a = flip_list[self._flip_index_a]
+        else:
+            self._flip_index_b = (self._flip_index_b + direction) % len(flip_list)
+            self._scene_b = flip_list[self._flip_index_b]
+
+        _LOGGER.debug(
+            "Flip slot %s → index %d → %s",
+            self._active_slot,
+            self._flip_index_a if self._active_slot == SLOT_A else self._flip_index_b,
+            self._scene_a if self._active_slot == SLOT_A else self._scene_b,
+        )
+
+        await self._activate_current_slot(check_skip=True)

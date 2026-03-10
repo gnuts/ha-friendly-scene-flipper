@@ -26,11 +26,15 @@
         "title": "Reconfigure Scene Flipper",
         "data": {
           "scene_a": "Scene A",
-          "scene_b": "Scene B"
+          "scene_b": "Scene B",
+          "flip_list_a": "Flip list A",
+          "flip_list_b": "Flip list B"
         },
         "data_description": {
           "scene_a": "The scene to use for slot A.",
-          "scene_b": "The scene to use for slot B."
+          "scene_b": "The scene to use for slot B.",
+          "flip_list_a": "Scenes to cycle through with flip_next/flip_prev when slot A is active. Leave empty to disable flipping for slot A.",
+          "flip_list_b": "Scenes to cycle through with flip_next/flip_prev when slot B is active. Leave empty to disable flipping for slot B."
         }
       }
     }
@@ -77,6 +81,14 @@
           "description": "True to arm the skip, false to clear it."
         }
       }
+    },
+    "flip_next": {
+      "name": "Flip next",
+      "description": "Advance to the next scene in the active slot's flip list and activate it."
+    },
+    "flip_prev": {
+      "name": "Flip previous",
+      "description": "Go to the previous scene in the active slot's flip list and activate it."
     }
   }
 }
