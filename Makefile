@@ -55,13 +55,13 @@ ha-logs-all: ## Tail all HA logs
 # ── Git ───────────────────────────────────────────
 
 push: ## Push to all remotes (gitlab first, then origin) with tags
-	git push gitlab --tags && git push origin --tags
+	git push gitlab --follow-tags && git push origin --follow-tags
 
 push-gitlab: ## Push to gitlab remote with tags
-	git push gitlab --tags
+	git push gitlab --follow-tags
 
 push-origin: ## Push to origin remote with tags
-	git push origin --tags
+	git push origin --follow-tags
 
 # ── Housekeeping ──────────────────────────────────
 
