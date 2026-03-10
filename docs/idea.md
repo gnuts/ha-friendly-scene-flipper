@@ -8,12 +8,6 @@ Iteration 1:
 - change one or both scenes, if changing the currently active scene, reactivate with new value
 - Allow to create any number of scene togglers
 
-- Iteration 2:
-
-- Allow to skip the next changing of one or both scenes (except when manually done). Toggle still works as normal, only skip replacing of scene A or B value.
-- Allow for skipping through a list of scenes, replacing the currently active one. Two separate lists for scene A and B. Skip is performend on the active scene (A or B)
-
-
 For example:
 
 Iteration 1:
@@ -36,6 +30,8 @@ I create one of these setups for each room.
 - discuss technical approaches to this project, if there are options.
 - suggest good names for this project.
 - use git.
+- use uv.
+- create unittests using pytest
 - use conventional commits.
 - commit each funtional set of changes seperately
 - increase version number accordingly 

@@ -27,3 +27,9 @@ config/blueprints/
 config/.HA_VERSION
 config/.ha_run.lock
 config/home-assistant.log*
+config/.cache/
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
