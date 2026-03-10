@@ -15,10 +15,11 @@ venv/
 .vscode/
 *.swp
 *.swo
+.claude/agent-memory/
+uv.lock
 
 # Home Assistant dev container runtime artifacts
-config/.storage/*
-!config/.storage/.gitkeep
+config/.storage/
 config/home-assistant_v2.db*
 config/.cloud/
 config/tts/
