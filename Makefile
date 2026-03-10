@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install test lint lint-fix format ha-up ha-down ha-restart ha-logs clean
+.PHONY: help install test lint lint-fix format scan ha-up ha-down ha-restart ha-logs clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -30,6 +30,9 @@ format: ## Run ruff formatter
 
 format-check: ## Check formatting without changes
 	uv run ruff format --check .
+
+scan: ## Run Trivy security scan on project dependencies
+	docker run --rm -v $$(pwd):/workspace:ro aquasec/trivy:latest fs /workspace
 
 # ── Dev Container ─────────────────────────────────
 
