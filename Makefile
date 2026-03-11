@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install test lint lint-fix format scan ha-up ha-down ha-restart ha-logs clean push push-gitlab push-origin
+.PHONY: help install test lint lint-fix format scan ha-up ha-down ha-restart ha-logs clean push push-origin push-gitea
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -54,14 +54,14 @@ ha-logs-all: ## Tail all HA logs
 
 # ── Git ───────────────────────────────────────────
 
-push: ## Push to all remotes (gitlab first, then origin) with tags
-	git push gitlab --follow-tags && git push origin --follow-tags
+push: ## Push to all remotes (origin first, then gitea) with tags
+	git push origin --follow-tags && git push gitea --follow-tags
 
-push-gitlab: ## Push to gitlab remote with tags
-	git push gitlab --follow-tags
-
-push-origin: ## Push to origin remote with tags
+push-origin: ## Push to origin (GitHub) with tags
 	git push origin --follow-tags
+
+push-gitea: ## Push to gitea (git.foo.pm) with tags
+	git push gitea --follow-tags
 
 # ── Housekeeping ──────────────────────────────────
 
