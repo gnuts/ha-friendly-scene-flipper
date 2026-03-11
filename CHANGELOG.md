@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Primary hosting switched from GitLab to GitHub for HACS compatibility
+- Makefile push targets updated for new remote layout
+
 ## [0.2.1] - 2026-03-10
 
 ### Changed
@@ -50,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Dropdown displays scene friendly names
 - Per-entity concurrency safety with asyncio.Lock
 
-[Unreleased]: https://gitlab.com/gnuts/ha-friendly-scene-flipper/-/compare/v0.2.1...HEAD
-[0.2.1]: https://gitlab.com/gnuts/ha-friendly-scene-flipper/-/compare/v0.2.0...v0.2.1
-[0.2.0]: https://gitlab.com/gnuts/ha-friendly-scene-flipper/-/compare/v0.1.0...v0.2.0
-[0.1.0]: https://gitlab.com/gnuts/ha-friendly-scene-flipper/-/releases/v0.1.0
+[Unreleased]: https://github.com/gnuts/ha-friendly-scene-flipper/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/gnuts/ha-friendly-scene-flipper/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/gnuts/ha-friendly-scene-flipper/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/gnuts/ha-friendly-scene-flipper/releases/tag/v0.1.0

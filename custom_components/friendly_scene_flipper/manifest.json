@@ -3,9 +3,9 @@
   "name": "Friendly Scene Flipper",
   "codeowners": ["@gnuts"],
   "config_flow": true,
-  "documentation": "https://gitlab.com/gnuts/ha-friendly-scene-flipper",
+  "documentation": "https://github.com/gnuts/ha-friendly-scene-flipper",
   "integration_type": "device",
   "iot_class": "local_push",
-  "issue_tracker": "https://gitlab.com/gnuts/ha-friendly-scene-flipper/-/issues",
+  "issue_tracker": "https://github.com/gnuts/ha-friendly-scene-flipper/issues",
   "version": "0.2.1"
 }
